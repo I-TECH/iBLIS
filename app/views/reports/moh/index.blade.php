@@ -92,7 +92,7 @@
                                             </tr>
                                             @foreach($moh706List['urineChemistryList'] as $measure)
                                                 <tr>       
-                                                <td >1.{{$num}} {{ $measure['name'] }}</td>
+                                                <td >1.{{$num}} {{ $measure['name'] }} </td>
                                                 <td style="background-color: #CCCCCC;"></td>
                                                 <td>{{ $measure['positive'] }}</td>
                                                 <?php $num++ ?>
@@ -106,7 +106,7 @@
                                             </tr>
                                             @foreach($moh706List['urineMicroscopyList'] as $measure)
                                                 <tr>
-                                                <td >1.{{$num}} {{ $measure['name'] }}</td>
+                                                <td >1.{{$num}} {{ $measure['name'].($measure['name']=='Pus cells' ? '(&gt;5/hpf)' : '') }}</td>
                                                 <td style="background-color: #CCCCCC;"></td>
                                                 <td>{{ $measure['positive'] }}</td>
                                                 <?php $num++ ?>
