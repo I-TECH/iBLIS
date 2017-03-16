@@ -1372,7 +1372,7 @@ class ReportController extends \BaseController {
                 /*===============*/
                 
                 /* blood sugar test */
-                $bloodSugarTestArr = array ('Random Blood sugar', 'OGTT'); 
+                $bloodSugarTestArr = array ('Random Blood sugar', 'Fasting Blood sugar', 'OGTT'); 
                 $bloodSugarTestList = array();
                 foreach($bloodSugarTestArr as $bst) {
                     $bloodSugar = TestType::getTestTypeIdByTestName($bst);
@@ -1453,18 +1453,22 @@ class ReportController extends \BaseController {
                 $moh706List['lipidProfileTotalExam'] = $lipidProfileTotalExam;
                 
                 /* Hormonal test */
+                $hormonalTestArr = array ('Thyroid function tests', 'PSA screening');
                 $hormonalTestList = array();
-                $hormonal = TestType::getTestTypeIdByTestName('Thyroid function tests');
-                $measures = TestTypeMeasure::where('test_type_id', $hormonal)->orderBy('measure_id', 'DESC')->get();  
-                foreach ($measures as $measure) {
-                    $tMeasure = Measure::find($measure->measure_id);//get the testtype object
-                    if(!in_array($tMeasure->name, ['Thyroid stimulating hormone (TSH)', 'Thyroxine (T4)', 'Triiodothyromine (T3)'])){continue;}//add measures to be listed the report in the array
-                    $arr['name'] = $tMeasure->name;
-                    $arr['total'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
-                    $arr['low'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, ['Low'], null);
-                    $arr['high'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, ['High'], null);
-                    array_push($hormonalTestList, $arr);
+                foreach ($hormonalTestArr as $hrmnl ) {
+                	$hormonal = TestType::getTestTypeIdByTestName($hrmnl);
+	                $measures = TestTypeMeasure::where('test_type_id', $hormonal)->orderBy('measure_id', 'DESC')->get();  
+	                foreach ($measures as $measure) {
+	                    $tMeasure = Measure::find($measure->measure_id);//get the testtype object
+	                    if(!in_array($tMeasure->name, ['Thyroid stimulating hormone (TSH)', 'Thyroxine (T4)', 'Triiodothyromine (T3)', 'PSA screening' ])){continue;}//add measures to be listed the report in the array
+	                    $arr['name'] = $tMeasure->name;
+	                    $arr['total'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
+	                    $arr['low'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, ['Low'], null);
+	                    $arr['high'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, ['High'], null);
+	                    array_push($hormonalTestList, $arr);
+	                }
                 }
+                
                 $moh706List['hormonalTestList'] = $hormonalTestList;
                 
                 /* Tumor Markers*/
@@ -1487,7 +1491,7 @@ class ReportController extends \BaseController {
                 $moh706List['tumorMarkersList'] = $tumorMarkersList;
                 
                 /*CSF Chemistry*/
-                $csfChemistryArr = array ('CSF  glucose analysis', 'CSF protein analysis'); //lipid profile
+                $csfChemistryArr = array ('CSF glucose analysis', 'CSF protein analysis'); //lipid profile
                 $csfChemistryList = array();
                 foreach($csfChemistryArr as $csfc) {
                     $csfChemistry = TestType::getTestTypeIdByTestName($csfc);
@@ -1495,7 +1499,7 @@ class ReportController extends \BaseController {
                     $measures = TestTypeMeasure::where('test_type_id', $csfChemistry)->orderBy('measure_id', 'DESC')->get();  
                     foreach ($measures as $measure) {
                         $tMeasure = Measure::find($measure->measure_id);
-                        $arr['name'] = $tMeasure->name;
+                        $arr['name'] = $tMeasure->name=='CSF glucose analysis' ? 'Glucose' : 'Proteins';
                         $arr['total'] = $this->getGroupedTestCounts($csfChemistryObj, null, null, $from, $toPlusOne);
                         $arr['low'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, ['Low'], null);
                         $arr['high'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, ['High'], null);

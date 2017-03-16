@@ -126,17 +126,48 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        <?php $num = 1; ?>
+                                        <?php $num = 1;
+                                        $bloodsugarMeasureName="Blood sugar";
+                                        $bloodsugarMeasureTotal=0;
+                                        $bloodsugarMeasureLow=0;
+                                        $bloodsugarMeasureHigh=0;
+
+                                        $OGTTMeasureName="OGTT";
+                                        $OGTTMeasureTotal=0;
+                                        $OGTTMeasureLow=0;
+                                        $OGTTMeasureHigh=0;
+                                         ?>
                                             <!-- Blood sugar test -->
                                             @foreach($moh706List['bloodSugarTestList'] as $measure)
-                                                <tr>
-                                                <td >2.{{$num}} {{ $measure['name'] }}</td>
-                                                <td>{{ $measure['total'] }}</td>
-                                                <td>{{ $measure['low'] }}</td>
-                                                <td>{{ $measure['high'] }}</td>
+                                            @if($measure['name'] == 'Random Blood sugar' || $measure['name'] == 'Fasting Blood sugar')
+                                            <?php $bloodsugarMeasureTotal += $measure['total'];
+                                                  $bloodsugarMeasureLow   += $measure['low'];
+                                                  $bloodsugarMeasureHigh  += $measure['high'];
+                                             ?>
+                                            @endif
+
+                                            @if($measure['name'] == 'OGTT' || $measure['name'] == 'OGT')
+                                            <?php $OGTTMeasureTotal += $measure['total'];
+                                                  $OGTTMeasureLow   += $measure['low'];
+                                                  $OGTTMeasureHigh  += $measure['high'];
+                                             ?>
+                                            @endif
+                                                
+                                            @endforeach
+                                            <tr>
+                                                <td >2.{{$num}} {{ $bloodsugarMeasureName }}</td>
+                                                <td>{{ $bloodsugarMeasureTotal }}</td>
+                                                <td>{{ $bloodsugarMeasureLow }}</td>
+                                                <td>{{ $bloodsugarMeasureHigh }}</td>
                                                 <?php $num++ ?>
                                             </tr>
-                                            @endforeach
+                                            <tr>
+                                                <td >2.{{$num}} {{ $OGTTMeasureName }}</td>
+                                                <td>{{ $OGTTMeasureTotal }}</td>
+                                                <td>{{ $OGTTMeasureLow }}</td>
+                                                <td>{{ $OGTTMeasureHigh }}</td>
+                                                <?php $num++ ?>
+                                            </tr>
                                             <!-- renal function test -->
                                             <tr>
                                                 <td style="font-weight: bold">2.{{$num}} Renal Function Test</td> 
