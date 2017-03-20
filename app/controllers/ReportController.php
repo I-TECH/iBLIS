@@ -1513,22 +1513,44 @@ class ReportController extends \BaseController {
                 /*===============*/
                 
                 /* Malaria Test*/
-                $malariaTestId = TestType::getTestTypeIdByTestName('Blood slide for Malaria');
+                $malariaTestArr = array ('Blood slide for Malaria', 'Malaria Rapid Diagnostic Test'); 
                 $malariaTestList = array();
-                $malariaTest = TestType::find($malariaTestId);
-                $measures = TestTypeMeasure::where('test_type_id', $malariaTestId)->orderBy('measure_id', 'DESC')->get();
-                /* get measures that were positive at a given age range */
-                foreach ($ageRanges as $ageRange) {
-                    if($ageRange == '0-5'){ $arr['name'] = "Malaria BS (Under five years)"; }
-                    else { $arr['name'] = "Malaria BS (5 Years and above)"; }
-                    foreach ($measures as $measure) {
-                        $tMeasure = Measure::find($measure->measure_id);
-                        $arr['total'] = $this->getGroupedTestCounts($malariaTest, null, $ageRange, $from, $toPlusOne);
-                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, $ageRange, $from, $toPlusOne, null, null);
-                        array_push($malariaTestList, $arr);
-                    }
-                    
+                foreach($malariaTestArr as $mlra){
+                	$malariaTestId = TestType::getTestTypeIdByTestName($mlra);
+                	$malariaTest = TestType::find($malariaTestId);
+                	$measures = TestTypeMeasure::where('test_type_id', $malariaTestId)->orderBy('measure_id', 'DESC')->get();
+                	if ($mlra=='Malaria Rapid Diagnostic Test') {
+	                		$arr['name'] = "Malaria Rapid Diagnostic Test";
+	                		foreach ($measures as $measure) {
+	                        $tMeasure = Measure::find($measure->measure_id);
+	                        $arr['total'] = $this->getGroupedTestCounts($malariaTest, null, $ageRange, $from, $toPlusOne);
+	                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, $ageRange, $from, $toPlusOne, null, null);
+	                        array_push($malariaTestList, $arr);
+	                    	}
+	                	}
+                	 /* get measures that were positive at a given age range for Blood slide for Malaria */
+	                else {
+	                	foreach ($ageRanges as $ageRange) {
+    	                	if ($mlra=='Blood slide for Malaria') {
+    	                		if($ageRange == '0-5'){ $arr['name'] = "Malaria BS (Under five years)"; }
+    	                    	else { $arr['name'] = "Malaria BS (5 Years and above)"; }
+    	                	}
+    	                    
+    	                    foreach ($measures as $measure) {
+    	                        $tMeasure = Measure::find($measure->measure_id);
+    	                        $arr['total'] = $this->getGroupedTestCounts($malariaTest, null, $ageRange, $from, $toPlusOne);
+    	                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, $ageRange, $from, $toPlusOne, null, null);
+    	                        array_push($malariaTestList, $arr);
+    	                    }
+	                	                    
+    	                }
+    	            }
                 }
+                
+                
+                
+                
+               
                 $moh706List['malariaTestList'] = $malariaTestList;
                                 
                 /* Stool Anlaysis */
