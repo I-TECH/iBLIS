@@ -1546,11 +1546,7 @@ class ReportController extends \BaseController {
     	                }
     	            }
                 }
-                
-                
-                
-                
-               
+                  
                 $moh706List['malariaTestList'] = $malariaTestList;
                                 
                 /* Stool Anlaysis */
@@ -1577,7 +1573,7 @@ class ReportController extends \BaseController {
                 
                 /* Haematology Test*/
                 
-                $haematologyTestArr = array ('Full haemogram/Full blood count', 'HB electrophoresis', 'CD4 count'); //haemotology tests
+                $haematologyTestArr = array ('Full haemogram/Full blood count', 'HB Estimation tests', 'CD4 count'); //haemotology tests
                 $haematologyTestList = array();
                 $CD4_FLAG = "CD4 count";
                 foreach($haematologyTestArr as $ht) {
@@ -1587,7 +1583,7 @@ class ReportController extends \BaseController {
                     $measures = TestTypeMeasure::where('test_type_id', $haematologyTestId)->orderBy('measure_id', 'DESC')->get();  
                     foreach ($measures as $measure) {
                         $tMeasure = Measure::find($measure->measure_id);
-                        if(!in_array($tMeasure->name, ['Haemoglobin', 'HB electrophoresis', 'CD4 count'])){continue;}
+                        if(!in_array($tMeasure->name, ['Haemoglobin', 'HB Estimation tests', 'CD4 count'])){continue;}
                         $arr['total'] = $this->getGroupedTestCounts($haematologyTestObj, null, null, $from, $toPlusOne);
                         //for CD4 count
                         if($tMeasure->name == 'CD4 count')
@@ -1607,21 +1603,41 @@ class ReportController extends \BaseController {
                 /* Other Haematology Tests*/
                 
                 $otherHaematologyTestsArr = array ('Peripheral Blood films', 'Sickling test', 
-                    'Bone marrow aspirates', 'Reticulocyte count', 'Erythrocyte sedimentation rate (ESR)');
+                    'Bone marrow aspirates', 'Reticulocyte count', 'Coagulation Profile', 'Erythrocyte sedimentation rate (ESR)');
                 $otherHaematologyTestsList = array();
                 $ESR_FLAG = "Erythrocyte sedimentation rate (ESR)";
                 foreach($otherHaematologyTestsArr as $oht) { 
                     $otherHaematologyTestsId = TestType::getTestTypeIdByTestName($oht);
                     $otherHaematologyTests = TestType::find($otherHaematologyTestsId);
                     $measures = TestTypeMeasure::where('test_type_id', $otherHaematologyTestsId)->orderBy('measure_id', 'DESC')->get();
+                    $CoagProfName = 'Coagulation Profile';
+                    $CoagProfAggregateTotal = 0;
+                    $CoagProfAggregatePositive = 0;
+                    $CoagProfAggregateHigh = 0;
+
                     /* get measures that were positive */
                     foreach ($measures as $measure) {
                         $tMeasure = Measure::find($measure->measure_id);
-                        $arr['name'] = $tMeasure->name;
-                        $arr['total'] = $this->getGroupedTestCounts($otherHaematologyTests, null, null, $from, $toPlusOne);
-                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
-                        $arr['high'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, ['High'], null);
-                        array_push($otherHaematologyTestsList, $arr);
+                        if ($oht == $CoagProfName) {
+                        	$CoagProfAggregateTotal += $this->getGroupedTestCounts($otherHaematologyTests, null, null, $from, $toPlusOne);
+                        	$CoagProfAggregatePositive += $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
+                        	$CoagProfAggregateHigh += $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, ['High'], null);
+                        }
+                        else{
+                        	$arr['name'] = $tMeasure->name;
+	                        $arr['total'] = $this->getGroupedTestCounts($otherHaematologyTests, null, null, $from, $toPlusOne);
+	                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
+	                        $arr['high'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, ['High'], null);
+	                        array_push($otherHaematologyTestsList, $arr);
+                        }
+                        
+                    }
+                    if ($oht == $CoagProfName) {
+                    	$arr['name'] = $CoagProfName;
+                    	$arr['total'] = $CoagProfAggregateTotal;
+                    	$arr['positive'] = $CoagProfAggregatePositive;
+                    	$arr['high'] = $CoagProfAggregateHigh;
+                    	array_push($otherHaematologyTestsList, $arr);
                     }
                 }
                 $moh706List['otherHaematologyTestsList'] = $otherHaematologyTestsList;
@@ -1649,7 +1665,7 @@ class ReportController extends \BaseController {
                 
                  /* Blood screening at facility*/
                 
-                $bloodScreeningArr = array ('Hepatitis C test', 'Hepatitis B test (HBs Ag)', 'HIV ELISA', 'Rapid Plasma Reagin (RPR)');
+                $bloodScreeningArr = array ('Hepatitis C test', 'Hepatitis B test (HBs Ag)', 'HIV ELISA', 'Rapid Plasma Reagin (RPR)', 'Syphilis');
                 $bloodScreeningList = array();
                 foreach($bloodScreeningArr as $bsf) { 
                     $bloodScreeningId = TestType::getTestTypeIdByTestName($bsf);
@@ -1741,11 +1757,11 @@ class ReportController extends \BaseController {
                 
                 /* Bacterial Meningitis*/
                 
-                $bacterialMeningitisArr = array ('CSF  culture', 'Neisseria meningitidis A', 'Neisseria meningitidis B', 'Neisseria meningitidis C',
+                $bacterialMeningitisArr = array ('CSF culture', 'Neisseria meningitidis A', 'Neisseria meningitidis B', 'Neisseria meningitidis C',
                                         'Neisseria meningitidis W135', 'Neisseria meningitidis X', 'Neisseria meningitidis Y', 
                                         'Neisseria meningitidis (indeterminate)', 'Streptococcus pneumoniae','Haemophilus influenzae (type b)',
                                         'Cryptococcal Meningitis', 'B. anthracis', 'Y. pestis');
-                $CSF_FLAG = "CSF  culture";
+                $CSF_FLAG = "CSF culture";
                 $BP_FLAG = "B. anthracis";
                 $bacterialMeningitisList = array();
                 foreach($bacterialMeningitisArr as $bm) { 
@@ -1758,7 +1774,7 @@ class ReportController extends \BaseController {
                         $arr['name'] = $tMeasure->name;
                         
                         $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
-                        if($tMeasure->name == 'CSF  culture')
+                        if($tMeasure->name == 'CSF culture')
                         {
                             $arr['total'] = $this->getGroupedTestCounts($bacterialMeningitis, null, null, $from, $toPlusOne);
                             $arr['contaminated'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
