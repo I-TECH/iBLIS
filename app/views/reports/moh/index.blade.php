@@ -443,39 +443,57 @@
                                         @endforeach
                                          <!-- Bacterial Meningitis -->
                                         <tr><td colspan="4" style="font-weight: bold; align-content: center;">Bacterial Meningitis</td></tr>
-                                        @foreach($moh706List['bacterialMeningitisList'] as $measure)
-                                            @if($measure['name'] == $moh706List['CSF_FLAG'])
-                                            <tr style="font-weight: bold;">
+                                         <!-- CSF Culture -->
+                                         <tr style="font-weight: bold;">
                                                 <td>Bacterial Meningitis</td>
                                                 <td>Total exam</td>
                                                 <td>Number positive</td>
                                                 <td>Number contaminated</td>
                                             </tr>
-                                            @else
-                                            <tr style="font-weight: bold;">
-                                                <td colspan="2">Bacterial meningitis serotypes</td>
-                                                <td colspan="2">Number positive</td>
-                                            </tr>
-                                            @endif
+                                            @foreach($moh706List['bacterialMeningitisList'] as $measure)
+                                             @if($measure['name'] == $moh706List['CSF_FLAG'])<!-- display CSF -->
                                             <tr>
-                                                @if($measure['name'] == $moh706List['CSF_FLAG'])<!-- display CSF -->
+                                               
                                                     <td>5.{{$num}} {{ $measure['name'] }}</td>
                                                     <td>{{ $measure['total'] }}</td>
                                                     <td>{{ $measure['positive'] }}</td>
                                                     <td>{{ $measure['contaminated'] }}</td>
-                                                @else 
-                                                    @if($measure['name'] == $moh706List['BP_FLAG'])
-                                                        <tr>
-                                                            <td colspan="4" style="font-weight: bold; align-content: center;">
-                                                                Bacterial Pathogens from other types of specimen
-                                                            </td>
-                                                        </tr>
-                                                    @endif
-                                                    <td colspan="2">5.{{$num}} {{ $measure['name'] }}</td>
-                                                    <td colspan="2">{{ $measure['positive'] }}</td>
-                                                @endif
+                                               
                                             </tr>
-                                             <?php $num++ ?>
+                                            <?php $num++ ?>
+                                             @endif
+                                             
+                                        @endforeach
+                                        <tr style="font-weight: bold;">
+                                                <td colspan="2">Bacterial meningitis serotypes</td>
+                                                <td colspan="2">Number positive</td>
+                                            </tr>
+                                        @foreach($moh706List['bacterialMeningitisList'] as $measure)
+                                                 @if($measure['name'] != $moh706List['BP_FLAG'] && $measure['name'] != $moh706List['YP_FLAG'] && $measure['name'] != $moh706List['CSF_FLAG'])
+                                                     <tr>
+                                                
+                                                        <td colspan="2">5.{{$num}} {{ $measure['name'] }}</td>
+                                                        <td colspan="2">{{ $measure['positive'] }}</td>
+                                                    
+                                                     </tr>   
+                                                     <?php $num++ ?>
+                                                 @endif 
+                                             
+                                        @endforeach
+                                        <tr>
+                                            <td colspan="4" style="font-weight: bold; align-content: center;">
+                                                Bacterial Pathogens from other types of specimen
+                                            </td>
+                                        </tr>
+                                        @foreach($moh706List['bacterialMeningitisList'] as $measure)
+                                            @if($measure['name'] == $moh706List['BP_FLAG'] || $measure['name'] == $moh706List['YP_FLAG'])
+                                        <tr> 
+                                            <td colspan="2">5.{{$num}} {{ $measure['name'] }}</td>
+                                            <td colspan="2">{{ $measure['positive'] }}</td>   
+                                        </tr>
+                                        <?php $num++ ?>
+                                            @endif
+                                             
                                         @endforeach
                                         <!-- Sputum -->
                                         <tr style="font-weight: bold">
@@ -516,7 +534,7 @@
                                         @endforeach
                                         <!-- Fine Needles Aspirates -->
                                             <tr style="font-weight: bold"> 
-                                                <td colspan="2">Fine Needles Aspirates</td> 
+                                                <td colspan="2">Fine Needle Aspirate</td> 
                                                 <td>Total Exam</td>
                                                 <td>Malignant</td>
                                             </tr>
@@ -535,6 +553,20 @@
                                                 <td>Malignant</td>
                                             </tr>
                                         @foreach($moh706List['fluidCytologyList'] as $measure) 
+                                            <tr>
+                                                <td colspan="2">6.{{$num}} {{ $measure['name'] }}</td>
+                                                <td>{{ $measure['total'] }}</td>
+                                                <td>{{ $measure['positive'] }}</td> <!-- malignant -->
+                                            </tr>    
+                                            <?php $num++ ?>                                                                                    
+                                        @endforeach
+                                        <!-- Tissue Histology -->
+                                            <tr style="font-weight: bold"> 
+                                                <td colspan="2"> Tissue Histology </td> 
+                                                <td>Total Exam</td>
+                                                <td>Malignant</td>
+                                            </tr>
+                                        @foreach($moh706List['tissueHistologyList'] as $measure) 
                                             <tr>
                                                 <td colspan="2">6.{{$num}} {{ $measure['name'] }}</td>
                                                 <td>{{ $measure['total'] }}</td>
@@ -618,14 +650,14 @@
                                             <tr>
                                                 <th colspan="2" style="font-weight: bold">Drug Sensitivity Pattern</th>
                                                 @foreach($moh706List['drugs'] as $drug)
-                                                    <th colspan="3" style="font-size: 12px"> {{ $drug['name'] }}</th>
+                                                    <th colspan="2" style="font-size: 12px"> {{ $drug['name'] }}</th>
                                                 @endforeach
                                             </tr>
                                             <tr>
                                                 <th colspan="2"></th>
                                                 @foreach($moh706List['drugs'] as $drug)
                                                     <th style="font-size: 10px">S</th>
-                                                    <th style="font-size: 10px">I</th>
+                                                    <!-- <th style="font-size: 10px">I</th> -->
                                                     <th style="font-size: 10px">R</th>
                                                 @endforeach
                                             </tr>
@@ -638,7 +670,7 @@
                                                 <td colspan="2">9.{{$num}} {{ $organism['name'] }}</td>
                                                 @for ($i = 0; $i < count($moh706List['drugs']); $i++)<!-- populate each sensitivity on each drug per organism -->
                                                     <td style="font-size: 10px">{{ $organism['drug'][$i]['s']}}</td>
-                                                    <td style="font-size: 10px">{{ $organism['drug'][$i]['i']}}</td>
+                                                    <!-- <td style="font-size: 10px">{{ $organism['drug'][$i]['i']}}</td> -->
                                                     <td style="font-size: 10px">{{ $organism['drug'][$i]['r']}}</td>
                                                 @endfor
                                             </tr>   

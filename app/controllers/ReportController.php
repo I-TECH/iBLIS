@@ -1763,27 +1763,39 @@ class ReportController extends \BaseController {
                                         'Cryptococcal Meningitis', 'B. anthracis', 'Y. pestis');
                 $CSF_FLAG = "CSF culture";
                 $BP_FLAG = "B. anthracis";
+                $YP_FLAG = "Y. pestis";
                 $bacterialMeningitisList = array();
                 foreach($bacterialMeningitisArr as $bm) { 
-                    $bacterialMeningitisId = TestType::getTestTypeIdByTestName($bm);
-                    $bacterialMeningitis = TestType::find($bacterialMeningitisId);
-                    $measures = TestTypeMeasure::where('test_type_id', $bacterialMeningitisId)->orderBy('measure_id', 'DESC')->get();
-                    /* get measures that were positive */
-                    foreach ($measures as $measure) {
-                        $tMeasure = Measure::find($measure->measure_id);
-                        $arr['name'] = $tMeasure->name;
-                        
-                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
-                        if($tMeasure->name == 'CSF culture')
-                        {
-                            $arr['total'] = $this->getGroupedTestCounts($bacterialMeningitis, null, null, $from, $toPlusOne);
-                            $arr['contaminated'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
-                        }                       
-                        array_push($bacterialMeningitisList, $arr);
+                    if ($bm == $CSF_FLAG){
+                    	$bacterialMeningitisId = TestType::getTestTypeIdByTestName($bm);
+                        $bacterialMeningitis = TestType::find($bacterialMeningitisId);
+                        $measures = TestTypeMeasure::where('test_type_id', $bacterialMeningitisId)->orderBy('measure_id', 'DESC')->get();
+                        /* get measures that were positive */
+                        foreach ($measures as $measure) {
+                            $tMeasure = Measure::find($measure->measure_id);
+                            $arr['name'] = $tMeasure->name;
+                            
+                            $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
+                            if($tMeasure->name == 'CSF culture')
+                            {
+                                $arr['total'] = $this->getGroupedTestCounts($bacterialMeningitis, null, null, $from, $toPlusOne);
+                                $arr['contaminated'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
+                            }                       
+                            array_push($bacterialMeningitisList, $arr);
+                        }
+                    }
+                    else{
+                    	$arr['name'] = $bm;
+	                    foreach ($sampleTypesList as $sampleType) 
+	                    {
+	                        $arr['positive'] = TestResult::microCounts($bm,$sampleType, $from, $toPlusOne)[0]->total;
+	                    } 
+	                    array_push($bacterialMeningitisList, $arr);
                     }
                 }
                 $moh706List['CSF_FLAG'] = $CSF_FLAG;
                 $moh706List['BP_FLAG'] = $BP_FLAG;
+                $moh706List['YP_FLAG'] = $YP_FLAG;
                 $moh706List['bacterialMeningitisList'] = $bacterialMeningitisList;
                 
                 /* Sputum*/
@@ -1826,7 +1838,7 @@ class ReportController extends \BaseController {
                 /* Fluid cytology*/
                 $moh706List['fluidCytologyList'] = $this->histologyCytologySerology(array('Ascitic fluid','CSF', 'Pleural fluid', 'Urine'), $from, $toPlusOne);
                 /* Tissue Histology*/
-                $moh706List['fluidCytologyList'] = $this->histologyCytologySerology(
+                $moh706List['tissueHistologyList'] = $this->histologyCytologySerology(
                         array('Cervix','Prostrate', 'Breast tissue', 'Ovarian cyst', 'Uterus', 'Skin', 'Head and neck', 'Dental', 'GIT', 'Lymph nodes'), 
                         $from, 
                         $toPlusOne);
@@ -1908,8 +1920,8 @@ class ReportController extends \BaseController {
                    'Nalidixic acid','Trimethoprim-sulphamethoxazole', 'Tetracycline', 'Augmentin');//hold the list of drugs to be reported
                 $drugs = Drug::all();//get all drugs from the catalog
                 $drugList = array();
-                $organismsArr = array('Haemophilus','Neisseria','Streptococcus',
-                    'Salmonella','Shigella', 'Vibrio', 'Bacillus anthracis', 'Yersinia pestis');//hold the list of drugs to be reported
+                $organismsArr = array('Haemophilus','Neisseria meningitidis','Streptococcus Pneumoniae',
+                    'Salmonella','Shigella', 'Vibrio cholerae', 'Bacillus anthracis', 'Yersinia pestis');//hold the list of drugs to be reported
                 $organisms = Organism::all();
                 $organismsList = array();
                 //print_r(Organism::find(Organism::getOrganismIdByName('Shigella')));
