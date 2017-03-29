@@ -1559,8 +1559,8 @@ class ReportController extends \BaseController {
                 /*get measures that were positive*/
                 foreach ($measures as $measure) {
                         $tMeasure = Measure::find($measure->measure_id);
-                        if(!in_array($tMeasure->name, [ 'Taenia spp.', 'H. nana', 'H. diminuta', 'Hookworm', 'Roundworms', 'S. mansoni', 'Trichuris trichiura', 'Amoeba'])){continue;}//add measures to be listed the report in the array
-                        $arr['name'] = $tMeasure->name;
+                        if(!in_array($tMeasure->name, [ 'Taenia spp.', 'H. nana', 'H. diminuta', 'Hookworm', 'Roundworms', 'S. mansoni', 'Trichuris trichiura', 'Entamoeba hystolytica'])){continue;}//add measures to be listed the report in the array
+                        $arr['name'] = $tMeasure->name == 'Entamoeba hystolytica' ? 'Amoeba' : $tMeasure->name;
                         $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
                         array_push($stoolAnalysisList, $arr);
                 }
@@ -1573,17 +1573,17 @@ class ReportController extends \BaseController {
                 
                 /* Haematology Test*/
                 
-                $haematologyTestArr = array ('Full haemogram/Full blood count', 'HB Estimation tests', 'CD4 count'); //haemotology tests
+                $haematologyTestArr = array ('Full haemogram/Full blood count', 'Haemoglobin', 'CD4 count'); //haemotology tests
                 $haematologyTestList = array();
                 $CD4_FLAG = "CD4 count";
                 foreach($haematologyTestArr as $ht) {
-                    $arr['name'] = $ht;//test name
+                    $arr['name'] = $ht == 'Haemoglobin' ? 'HB estimation tests' : $ht;//test name
                     $haematologyTestId = TestType::getTestTypeIdByTestName($ht);
                     $haematologyTestObj = TestType::find($haematologyTestId);//get the testtype object
                     $measures = TestTypeMeasure::where('test_type_id', $haematologyTestId)->orderBy('measure_id', 'DESC')->get();  
                     foreach ($measures as $measure) {
                         $tMeasure = Measure::find($measure->measure_id);
-                        if(!in_array($tMeasure->name, ['Haemoglobin', 'HB Estimation tests', 'CD4 count'])){continue;}
+                        if(!in_array($tMeasure->name, ['Haemoglobin', 'CD4 count'])){continue;}
                         $arr['total'] = $this->getGroupedTestCounts($haematologyTestObj, null, null, $from, $toPlusOne);
                         //for CD4 count
                         if($tMeasure->name == 'CD4 count')
