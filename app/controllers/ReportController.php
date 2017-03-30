@@ -1665,7 +1665,7 @@ class ReportController extends \BaseController {
                 
                  /* Blood screening at facility*/
                 
-                $bloodScreeningArr = array ('Hepatitis C test', 'Hepatitis B test (HBs Ag)', 'HIV ELISA', 'Rapid Plasma Reagin (RPR)', 'Syphilis');
+                $bloodScreeningArr = array ('Hepatitis C test', 'Hepatitis B test (HBs Ag)', 'HIV ELISA', 'Rapid Plasma Reagin (RPR)/VDRL');
                 $bloodScreeningList = array();
                 foreach($bloodScreeningArr as $bsf) { 
                     $bloodScreeningId = TestType::getTestTypeIdByTestName($bsf);
@@ -1674,7 +1674,7 @@ class ReportController extends \BaseController {
                     /* get measures that were positive */
                     foreach ($measures as $measure) {
                         $tMeasure = Measure::find($measure->measure_id);
-                        $arr['name'] = $tMeasure->name;
+                        $arr['name'] = $tMeasure->name == 'Rapid Plasma Reagin (RPR)/VDRL' ? 'Syphilis' : $tMeasure->name;
                         $arr['total'] = $this->getGroupedTestCounts($bloodScreening, null, null, $from, $toPlusOne);
                         $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
                         array_push($bloodScreeningList, $arr);
@@ -1833,7 +1833,7 @@ class ReportController extends \BaseController {
                 /* Smears */
                 $moh706List['smearsList'] = $this->histologyCytologySerology(array('Pap Smear', 'Tissue Impression', 'Touch preparations'), $from, $toPlusOne); 
                 /* Fine needles aspirates*/
-                $moh706List['aspiratesList'] = $this->histologyCytologySerology(array('Thyroid function tests','Lymph nodes tissue', 
+                $moh706List['aspiratesList'] = $this->histologyCytologySerology(array('Fine Needle aspirates Thyroid','Lymph nodes tissue', 
                     'Fine Needle aspirates Liver', 'Fine Needle aspirates Breast', 'Fine Needle aspirates soft tissue masses'), $from, $toPlusOne);
                 /* Fluid cytology*/
                 $moh706List['fluidCytologyList'] = $this->histologyCytologySerology(array('Ascitic fluid','CSF', 'Pleural fluid', 'Urine'), $from, $toPlusOne);
