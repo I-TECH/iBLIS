@@ -1346,7 +1346,7 @@ class ReportController extends \BaseController {
                         $tMeasure = Measure::find($measure->measure_id);
                         if(!in_array($tMeasure->name, ['Glucose', 'Ketones', 'Proteins'])){continue;}//add measures to be listed the report in the array
                         $arr['name'] = $tMeasure->name;
-                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
+                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, 'Positive');
                         array_push($urineChemistryList, $arr);
                 }
                 $moh706List['urineChemistryList'] = $urineChemistryList;
@@ -1361,7 +1361,7 @@ class ReportController extends \BaseController {
                 $tMeasure = Measure::find($measure->measure_id);
                 if(!in_array($tMeasure->name, ['Pus cells', 'Schistosoma haematobium', 'Trichomona Vaginalis', 'Yeast cells', 'Bacteria'])){continue;}//add measures to be listed the report in the array
                 $arr['name'] = $tMeasure->name;
-                $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
+                $arr['positive'] =$tMeasure->name =='Pus cells' ? $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, ['High'], null) : $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
                 array_push($urineMicroscopyList, $arr);
                 }
                 $moh706List['urineMicroscopyList'] = $urineMicroscopyList;
