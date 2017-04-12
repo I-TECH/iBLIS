@@ -1523,8 +1523,8 @@ class ReportController extends \BaseController {
 	                		$arr['name'] = "Malaria Rapid Diagnostic Test";
 	                		foreach ($measures as $measure) {
 	                        $tMeasure = Measure::find($measure->measure_id);
-	                        $arr['total'] = $this->getGroupedTestCounts($malariaTest, null, $ageRange, $from, $toPlusOne);
-	                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, $ageRange, $from, $toPlusOne, null, null);
+	                        $arr['total'] = $this->getGroupedTestCounts($malariaTest, null, null, $from, $toPlusOne);
+	                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
 	                        array_push($malariaTestList, $arr);
 	                    	}
 	                	}
@@ -1539,7 +1539,7 @@ class ReportController extends \BaseController {
     	                    foreach ($measures as $measure) {
     	                        $tMeasure = Measure::find($measure->measure_id);
     	                        $arr['total'] = $this->getGroupedTestCounts($malariaTest, null, $ageRange, $from, $toPlusOne);
-    	                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, $ageRange, $from, $toPlusOne, null, null);
+    	                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, $ageRange, $from, $toPlusOne, null, "Positive");
     	                        array_push($malariaTestList, $arr);
     	                    }
 	                	                    
