@@ -1524,7 +1524,7 @@ class ReportController extends \BaseController {
 	                		foreach ($measures as $measure) {
 	                        $tMeasure = Measure::find($measure->measure_id);
 	                        $arr['total'] = $this->getGroupedTestCounts($malariaTest, null, null, $from, $toPlusOne);
-	                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
+	                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, "Positive");
 	                        array_push($malariaTestList, $arr);
 	                    	}
 	                	}
@@ -1561,7 +1561,7 @@ class ReportController extends \BaseController {
                         $tMeasure = Measure::find($measure->measure_id);
                         if(!in_array($tMeasure->name, [ 'Taenia spp.', 'H. nana', 'H. diminuta', 'Hookworm', 'Roundworms', 'S. mansoni', 'Trichuris trichiura', 'Entamoeba hystolytica'])){continue;}//add measures to be listed the report in the array
                         $arr['name'] = $tMeasure->name == 'Entamoeba hystolytica' ? 'Amoeba' : $tMeasure->name;
-                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
+                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, true);
                         array_push($stoolAnalysisList, $arr);
                 }
                 $moh706List['stoolAnalysisList'] = $stoolAnalysisList;
