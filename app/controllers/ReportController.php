@@ -1676,7 +1676,7 @@ class ReportController extends \BaseController {
                         $tMeasure = Measure::find($measure->measure_id);
                         $arr['name'] = $tMeasure->name == 'Rapid Plasma Reagin (RPR)/VDRL' ? 'Syphilis' : $tMeasure->name;
                         $arr['total'] = $this->getGroupedTestCounts($bloodScreening, null, null, $from, $toPlusOne);
-                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
+                        $arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, true);
                         array_push($bloodScreeningList, $arr);
                     }
                 }

@@ -349,7 +349,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>4.{{$num}} {{ $measure['name'] }}</td>
-                                                    <td style="background-color: #CCCCCC;"></td>
+                                                    <td>{{ $measure['total'] }}</td>
                                                     <td colspan="2">{{ $measure['high'] }}</td>
                                                 </tr>
                                                 @else
