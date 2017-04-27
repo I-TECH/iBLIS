@@ -607,11 +607,7 @@
                                             <tr>
                                                 <td colspan="2">7.{{$num}} {{ $measure['name'] }}</td>
                                                 <td>{{ $measure['total'] }}</td>
-                                                @if($measure['name'] != $moh706List['CRAG_FLAG'])
-                                                    <td>{{ $measure['positive'] }}</td>
-                                                @else
-                                                    <td style="background-color: #CCCCCC;"></td>
-                                                @endif                                                
+                                                <td>{{ $measure['positive'] }}</td>                                              
                                             </tr> 
                                             <?php $num++ ?>                                           
                                         @endforeach

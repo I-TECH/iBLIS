@@ -1283,7 +1283,16 @@ class ReportController extends \BaseController {
                         //$arr['name'] = $tMeasure->name;
                         //$arr['total'] = $this->getGroupedTestCounts($aspirates, null, null, $from, $toPlusOne);
                         //$arr['positive'] = $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
-                        $positive += $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);
+                        // $positive += $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, true);
+                        $positive += TestResult::where('test_results.measure_id', $tMeasure->id)
+										 ->join('tests', 'tests.id', '=', 'test_results.test_id')
+										 ->join('test_types', 'tests.test_type_id', '=', 'test_types.id')
+										 ->join('testtype_measures', 'testtype_measures.test_type_id', '=', 'test_types.id')
+										 ->where('testtype_measures.measure_id', $tMeasure->id)
+                                         ->where('test_results.result', '!=', '')
+										 ->whereIn('test_status_id', [Test::COMPLETED, Test::VERIFIED])
+										 ->whereBetween('time_created', [$from, $toPlusOne])
+										 ->where('result', 'LIKE', array('%Malignant%'))->count();
                     }
                     $arr['positive'] = $positive;
                     array_push($testsList, $arr);
@@ -1706,7 +1715,7 @@ class ReportController extends \BaseController {
                     //number of culture positive for every bacteriological sample
                     foreach ($measures as $measure) {
                         $tMeasure = Measure::find($measure->measure_id);
-                        $positiveCount =+ $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, null);//aggregate positive cultures' measure
+                        $positiveCount =+ $this->getTotalTestResults($tMeasure, null, null, $from, $toPlusOne, null, true);//aggregate positive cultures' measure
                     }
 
                     $totalCount = DB::select(DB::raw("select count(specimen_id) as per_spec_count from tests".
