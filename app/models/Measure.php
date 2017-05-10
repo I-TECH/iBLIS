@@ -233,7 +233,7 @@ class Measure extends Eloquent
 			}
 			if($positive)
 			{
-				$testResults = $testResults->whereNotIn('result', ['nil', 'nill', 'not seen']);
+				$testResults = $testResults->whereNotIn('result', ['nil', 'nill', 'not seen','Negative']);
 			}
 		return $testResults->count();
 	}

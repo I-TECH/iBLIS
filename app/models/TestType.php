@@ -182,7 +182,7 @@ class TestType extends Eloquent
 				->join('referrals', 'specimens.referral_id', '=', 'referrals.id')
 				->join('tests', 'specimens.id', '=', 'tests.specimen_id')
 				->whereNotNull('referral_id')
-                                ->where('status', 1)
+                                // ->where('status', 1)
                                 ->where('tests.test_type_id', $this->id)
                                 ->whereBetween('time_accepted', [$from, $to]);
 		return $data->count();
